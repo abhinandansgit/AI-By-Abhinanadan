@@ -1,5 +1,3 @@
-!pip install pip install google-generativeai
-!pip install streamlit
 
 import os
 import streamlit as st
