@@ -1,0 +1,5 @@
+google-generativeai
+streamlit
+streamlit-extras
+streamlit_lottie
+Pillow
