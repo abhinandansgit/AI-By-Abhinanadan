@@ -65,6 +65,16 @@ st.markdown("<h1 style='text-align: center;'>AI by Abhinandan 🤖</h1>", unsafe
 st.subheader("Your Friendly AI Chatbot")
 st.write("Feel free to ask me anything or explore some fun features below!")
 
+def get_response_with_error_handling(prompt_text):
+    try:
+        chat = model.start_chat(history=[])
+        response = chat.send_message(prompt_text, stream=False)
+        return response.text
+    except Exception as e:
+        st.warning("The content may violate certain terms. Please try a different prompt.")
+        return None
+
+
 # Prompt Input and Generate Response Button in Same Row
 col1, col2 = st.columns([4, 1])
 with col1:
@@ -126,6 +136,9 @@ if st.button("Get an Inspirational Quote 💡", key="quote", help="Find inspirat
     chat = model.start_chat(history=[])
     quote_response = chat.send_message("Share an inspirational quote.")
     st.markdown(f"<div class='output-box'><strong>Quote:</strong><br>{quote_response.text}</div>", unsafe_allow_html=True)
+
+st.subheader("🐰 About the Developer")
+stoggle("Toggle to reveal a secret about Abhinandan", ("Abhinandan is a lazy programmer 😁", "So he codes only in Python 🐍"))
 
 # Footer and additional information
 st.write("---")
