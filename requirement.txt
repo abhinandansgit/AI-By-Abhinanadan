@@ -2,5 +2,4 @@ streamlit
 google-generative-ai
 streamlit-extras
 streamlit-lottie
-streamlit-3d-viewer
 pillow
