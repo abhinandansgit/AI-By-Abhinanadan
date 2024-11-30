@@ -3,18 +3,16 @@ import streamlit as st
 import google.generativeai as genai
 from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.stoggle import stoggle
-from streamlit_lottie import st_lottie
-from streamlit_3d_viewer import st_3d_viewer  # For 3D elements
+from PIL import Image
+import streamlit_lottie as stl
 import random
-import json
 
 
-# Configure Google Generative AI
 os.environ["GOOGLE_API_KEY"] = "AIzaSyCenB10p3CKKiVXqHiEiGTB5JtcNy2aDeM"
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 model = genai.GenerativeModel('gemini-pro')
 
-# Streamlit page configuration
+
 st.set_page_config(
     page_title="AI by Abhinandan",
     page_icon="🤖",
@@ -27,144 +25,109 @@ st.set_page_config(
     }
 )
 
-# CSS for multicolor gradient and crazy styles
+
 st.markdown(
     """
     <style>
     body {
-        background: linear-gradient(45deg, #FF5F6D, #FFC371, #47C9FF, #833AB4, #C13584);
-        animation: gradientBG 10s ease infinite;
+        background: linear-gradient(to right, #8E2DE2, #4A00E0);
         color: #fff;
     }
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
     .stButton > button {
-        border-radius: 12px;
-        background: linear-gradient(45deg, #FFC371, #FF5F6D);
-        color: white;
+        border-radius: 8px;
+        background-color: #FF0080;
+        color: #fff;
         font-weight: bold;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-        transition: transform 0.3s ease, background 0.4s ease;
+        transition: 0.4s ease;
     }
     .stButton > button:hover {
-        background: linear-gradient(45deg, #833AB4, #C13584);
+        background-color: #4A00E0;
         transform: scale(1.1);
     }
+    .generate-btn > button {
+        background-color: #FFD700 !important;
+        color: #000 !important;
+        font-weight: bold;
+    }
     .output-box {
-        border: 2px solid #47C9FF;
+        border: 1px solid #FFD700;
         padding: 15px;
-        background: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         margin-top: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-    }
-    .3d-box {
-        margin-top: 20px;
-        text-align: center;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+st.markdown("<h1 style='text-align: center;'>AI by Abhinandan 🤖</h1>", unsafe_allow_html=True)
+st.subheader("Your Friendly AI Chatbot")
+st.write("Feel free to ask me anything or explore some fun features below!")
 
-# 3D Object Viewer JSON
-cube_data = {
-    "vertices": [
-        [-1, -1, -1],
-        [1, -1, -1],
-        [1, 1, -1],
-        [-1, 1, -1],
-        [-1, -1, 1],
-        [1, -1, 1],
-        [1, 1, 1],
-        [-1, 1, 1],
-    ],
-    "faces": [
-        [0, 1, 2, 3],
-        [4, 5, 6, 7],
-        [0, 1, 5, 4],
-        [2, 3, 7, 6],
-        [0, 3, 7, 4],
-        [1, 2, 6, 5],
-    ],
-}
-
-# Header and interactive title
-st.markdown("<h1 style='text-align: center; font-family: Comic Sans MS;'>🌈 AI by Abhinandan 🤖</h1>", unsafe_allow_html=True)
-st.write("<p style='text-align: center; font-size: 18px;'>✨ Your friendly chatbot with a splash of creativity! ✨</p>", unsafe_allow_html=True)
-
-# Input box and AI generation
+def get_response_with_error_handling(prompt_text):
+    try:
+        chat = model.start_chat(history=[])
+        response = chat.send_message(prompt_text, stream=False)
+        return response.text
+    except Exception as e:
+        st.warning("The content may violate certain terms. Please try a different prompt.")
+        return None
 col1, col2 = st.columns([4, 1])
 with col1:
-    prompt = st.text_input("🌟 Enter your prompt below", placeholder="E.g., 'Write a poem about stars.'")
+    prompt = st.text_input("Enter your prompt below 👇", placeholder="E.g., 'Caption for Instagram', 'What’s the specialty of India?'")
 with col2:
-    generate_clicked = st.button("🚀 Generate AI Response")
-
+    generate_clicked = st.button("Generate AI Response 🚀", key="generate", help="Get a response based on your input prompt", 
+                                 type="primary", use_container_width=True)
 if generate_clicked:
     if not prompt:
         st.warning("Please enter a prompt to proceed.")
     else:
         chat = model.start_chat(history=[])
         response = chat.send_message(prompt, stream=False)
-        st.markdown(f"<div class='output-box'><strong>Response:</strong><br>{response.text}</div>", unsafe_allow_html=True)
-
-# Additional Features
+        st.markdown("<div class='output-box'><strong>Response:</strong><br>" + response.text + "</div>", unsafe_allow_html=True)
 col3, col4, col5 = st.columns(3)
 with col3:
-    urus_clicked = st.button("🏎️ Describe Lamborghini Urus")
+    urus_clicked = st.button("Describe Lamborghini Urus", key="urus", help="Get details about Lamborghini Urus")
 with col4:
-    story_clicked = st.button("📖 Create a Fun Story")
+    story_clicked = st.button("Create a Story of Lazy Programmer Abhinandan", key="story", help="A fun story about Abhinandan")
 with col5:
-    thanks_clicked = st.button("🙏 Say Thanks to Abhinandan")
-
+ if st.button("Wish Thanks to Abhinandan 😊", key="thanks", help="Thank Abhinandan for this chatbot"):
+        chat = model.start_chat(history=[])
+        thanks = chat.send_message("Write a formal one-line thanks to Abhinandan for this AI model")
+        st.write(f"You: {thanks.text}")
+        st.write("Abhinandan: You're welcome! Follow me on Instagram @abhinandan_ap_")
 if urus_clicked:
     chat = model.start_chat(history=[])
     response1 = chat.send_message("Describe Lamborghini Urus.")
-    st.markdown(f"<div class='output-box'><strong>Urus Details:</strong><br>{response1.text}</div>", unsafe_allow_html=True)
-
+    st.markdown(f"<div class='output-box'><strong>Response:</strong><br>{response1.text}</div>", unsafe_allow_html=True)
 if story_clicked:
     chat = model.start_chat(history=[])
-    response2 = chat.send_message("Tell a story of a lazy programmer named Abhinandan.")
+    response2 = chat.send_message("Create a story of lazy Programmer Abhinandan")
     st.markdown(f"<div class='output-box'><strong>Story:</strong><br>{response2.text}</div>", unsafe_allow_html=True)
-
-if thanks_clicked:
+st.subheader(" Some Extra Fun 😁", anchor="extra")
+if st.button("Tell me a Joke", key="joke", help="Get a joke to lighten up"):
     chat = model.start_chat(history=[])
-    thanks = chat.send_message("Write a formal thank you for Abhinandan for this chatbot.")
-    st.markdown(f"<div class='output-box'><strong>Thank You:</strong><br>{thanks.text}</div>", unsafe_allow_html=True)
-
-# Fun Elements Section
-st.subheader("🎉 Fun Section")
-
-# Joke Generator
-if st.button("😂 Tell me a Joke"):
-    chat = model.start_chat(history=[])
-    joke_response = chat.send_message("Tell me a joke.")
+    joke_response = chat.send_message("Tell me a funny joke.")
     st.markdown(f"<div class='output-box'><strong>Joke:</strong><br>{joke_response.text}</div>", unsafe_allow_html=True)
-
-# Inspirational Quote
-if st.button("💡 Inspire Me"):
+with st.expander("Toggle to reveal an interesting fact 🌍"):
+    chat = model.start_chat(history=[])
+    fact_response = chat.send_message("Tell me a random interesting fact.")
+    st.markdown(f"<div class='output-box'><strong>Fact:</strong><br>{fact_response.text}</div>", unsafe_allow_html=True)
+if st.button("Get an Inspirational Quote 💡", key="quote", help="Find inspiration with a quote"):
     chat = model.start_chat(history=[])
     quote_response = chat.send_message("Share an inspirational quote.")
     st.markdown(f"<div class='output-box'><strong>Quote:</strong><br>{quote_response.text}</div>", unsafe_allow_html=True)
-
-# 3D Viewer
-st.subheader("🌀 Explore in 3D")
-st_3d_viewer(cube_data, width=700, height=400)
-
-# Footer
+st.subheader("🐰 About the Developer")
+stoggle("Toggle to reveal a secret about Abhinandan", ("Abhinandan is a lazy programmer 😁", "So he codes only in Python 🐍"))
 st.write("---")
-add_vertical_space(2)
+add_vertical_space(3)
 st.markdown(
     """
-    <div style="text-align: center; font-size: 16px; color: #FFD700;">
-        Created with ❤️ by Abhinandan Parhi
-        <br> Connect on 
-        <a href="https://www.instagram.com/abhinandan_ap_" target="_blank" style="color: #FF6347;">Instagram</a>,
-        <a href="https://github.com/abhinandansgit" target="_blank" style="color: #FF6347;">GitHub</a>, and
-        <a href="https://linkedin.com/in/abhinandan-parhi-ap" target="_blank" style="color: #FF6347;">LinkedIn</a>
+    <div style="text-align: center; color: #FFD700; animation: pulse 2s infinite;">
+        👨‍💻 Made by Abhinandan Parhi | Connect on 
+        <a href="https://www.instagram.com/abhinandan_ap_" target="_blank" style="color: #FF6347;">Instagram</a>, 
+        <a href="https://in.linkedin.com/in/abhinandan-parhi-ap" target="_blank" style="color: #FF6347;">LinkedIn</a>, 
+        <a href="https://github.com/abhinandansgit" target="_blank" style="color: #FF6347;">GitHub</a>
     </div>
     """,
     unsafe_allow_html=True
