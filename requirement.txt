@@ -1,5 +1,6 @@
-google-generativeai
 streamlit
+google-generative-ai
 streamlit-extras
-streamlit_lottie
-Pillow
+streamlit-lottie
+streamlit-3d-viewer
+pillow
