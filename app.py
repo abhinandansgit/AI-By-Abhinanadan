@@ -7,7 +7,6 @@ from PIL import Image
 import streamlit_lottie as stl
 import random
 
-
 os.environ["GOOGLE_API_KEY"] = "AIzaSyCenB10p3CKKiVXqHiEiGTB5JtcNy2aDeM"
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 model = genai.GenerativeModel('gemini-pro')
