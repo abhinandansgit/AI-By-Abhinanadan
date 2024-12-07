@@ -1,6 +1,5 @@
 pip install --upgrade pip
-streamlit
 google-generative-ai
-streamlit-extras
-streamlit-lottie
+
 pillow
+
